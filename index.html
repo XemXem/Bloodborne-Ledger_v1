@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bloodborne Hunt Ledger</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#14100f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Hunt Ledger">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Spectral:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f1ebe0;--panel:#e8e0d0;--ink:#2a1d1a;--mute:#7a6a60;--line:#c9bca8;
+  --main:#8a1c2b;--opt:#2f6f6a;--dlc:#6b3fa0;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14100f;--panel:#1e1816;--ink:#e9dfd0;--mute:#9a8b7f;--line:#3a2e2a;
+  --main:#d44a5c;--opt:#4fb3aa;--dlc:#a97ee0;}}
+:root[data-theme="dark"]{--bg:#14100f;--panel:#1e1816;--ink:#e9dfd0;--mute:#9a8b7f;--line:#3a2e2a;--main:#d44a5c;--opt:#4fb3aa;--dlc:#a97ee0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Spectral,Georgia,serif;line-height:1.5}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+h1{font-family:"IM Fell English",Georgia,serif;font-weight:400;font-size:2.4rem;margin:8px 0 2px;letter-spacing:.01em}
+.sub{color:var(--mute);margin:0 0 16px;font-style:italic}
+.total{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.bar{flex:1;height:8px;background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--main);transition:width .3s}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;align-items:center}
+.chip{font:inherit;font-size:.9rem;padding:5px 12px;border-radius:99px;border:1.5px solid var(--c);color:var(--c);background:transparent;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--c);color:var(--bg)}
+.chip.plain{--c:var(--mute);margin-left:auto}
+.chip:focus-visible,summary:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.area{margin:0 0 10px;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:4px;background:var(--panel)}
+.area.main{--c:var(--main)}.area.opt{--c:var(--opt)}.area.dlc{--c:var(--dlc)}
+.area .area{margin:6px 0 6px 14px;background:transparent}
+summary{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";color:var(--c);transition:transform .15s;font-size:.8rem}
+details[open]>summary::before{transform:rotate(90deg)}
+.aname{font-family:"IM Fell English",Georgia,serif;font-size:1.25rem;flex:1}
+.tag{font-size:.78rem;color:var(--c)}
+.cnt{font-size:.85rem;color:var(--mute);min-width:3em;text-align:right}
+.body{padding:2px 12px 10px 38px}
+label.row{display:flex;gap:10px;align-items:baseline;padding:3px 0;cursor:pointer}
+input[type=checkbox]{accent-color:var(--c,var(--main));width:17px;height:17px;flex:none;transform:translateY(3px)}
+.boss .t{font-weight:600}
+.boss .n{color:var(--c);font-variant-numeric:tabular-nums;min-width:1.8em}
+.item{color:var(--mute);font-size:.95rem;padding-left:2.2em}
+input:checked+.t{text-decoration:line-through;opacity:.55}
+.empty{color:var(--mute);text-align:center;padding:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Hunt Ledger</h1>
+  <p class="sub">A Bloodborne progress route. Tick an area to tick everything in it.</p>
+  <div class="total"><div class="bar"><i id="tb"></i></div><span id="tc" class="cnt"></span></div>
+  <div class="tools" id="tools">
+    <button class="chip" style="--c:var(--main)" data-f="main" aria-pressed="true">Main path</button>
+    <button class="chip" style="--c:var(--opt)" data-f="opt" aria-pressed="true">Optional</button>
+    <button class="chip" style="--c:var(--dlc)" data-f="dlc" aria-pressed="true">Old Hunters DLC</button>
+    <button class="chip plain" id="reset" aria-pressed="false">Reset</button>
+  </div>
+  <div id="tree"></div>
+</div>
+<script>
+// t: m=main, o=optional, d=DLC. b=bosses (in order), i=notable items/lamps, k=sub-areas
+const ROUTE=[
+{n:"Central Yharnam",t:"m",b:["Cleric Beast","Father Gascoigne"],i:["Lamp: Hunter's Dream unlocked","Lamp: Central Yharnam","Lamp: Tomb of Oedon","Weapon upgrades from the Workshop"],k:[
+  {n:"Hemwick Charnel Lane",t:"o",b:["Witch of Hemwick"],i:["Lamp: Hemwick Charnel Lane","Lamp: Grand Cathedral"]}]},
+{n:"Old Yharnam",t:"m",b:["Blood-Starved Beast"],i:["Lamp: Old Yharnam","Lamp: Tomb of Oedon (Old Yharnam side)"]},
+{n:"Cathedral Ward",t:"m",b:["Vicar Amelia"],i:["Lamp: Cathedral Ward","Lamp: Grand Cathedral"],k:[
+  {n:"Yahar'gul, Unseen Village",t:"o",b:["Darkbeast Paarl"],i:["Lamp: Yahar'gul Chapel","Lamp: Outside Yahar'gul"]},
+  {n:"Altar of Despair",t:"o",b:["Martyr Logarius"],i:["Lamp: Altar of Despair"]}]},
+{n:"Forbidden Woods",t:"m",b:["Shadows of Yharnam"],i:["Lamp: Forbidden Woods","Lamp: Iosefka's Clinic"]},
+{n:"Byrgenwerth",t:"m",b:["Rom, the Vacuous Spider"],i:["Lamp: Byrgenwerth","Lamp: Lecture Building"],k:[
+  {n:"Lecture Building (Nightmare)",t:"o",b:[],i:["Lamp: Lecture Building"]}]},
+{n:"Upper Cathedral Ward",t:"m",b:["Ebrietas, Daughter of the Cosmos"],i:["Lamp: Upper Cathedral Ward","Lamp: Grand Cathedral"],k:[
+  {n:"Cainhurst Castle",t:"o",b:["Queen Annalise"],i:["Cainhurst Invitation Letter","Lamp: Cainhurst Castle"]}]},
+{n:"Nightmare Frontier",t:"m",b:["Amygdala","Micolash, Host of the Nightmare"],i:["Lamp: Nightmare Frontier","Lamp: Lecture Building"],k:[
+  {n:"Hypogean Gaol",t:"o",b:["Gargoyles"],i:["Lamp: Hypogean Gaol"]}]},
+{n:"Nightmare of Mensis",t:"m",b:["Mergo's Wet Nurse"],i:["Lamp: Mensis Nightmare","Lamp: Great Cathedral"],k:[
+  {n:"Mensis Nightmare (Brain)",t:"o",b:["Brain of Mensis"],i:["Lamp: Mensis Nightmare"]}]},
+{n:"Chalice Dungeons",t:"o",b:["Watchdog of the Old Lords","Keeper of the Old Lords","Pthumerian Queen Yharnam"],i:["Root Chalice","Defiled Chalice"]},
+{n:"Hunter's Nightmare",t:"d",b:["Ludwig the Accursed / Holy Blade"],i:["Lamp: Hunter's Nightmare","Lamp: Nightmare's Edge"]},
+{n:"Research Hall",t:"d",b:["Living Failures"],i:["Lamp: Research Hall","Lamp: Healing Church Workshop"]},
+{n:"Astral Clocktower",t:"d",b:["Lady Maria of the Astral Clocktower"],i:["Lamp: Astral Clocktower","Lamp: Clocktower"]},
+{n:"Fishing Hamlet",t:"d",b:["Orphan of Kos"],i:["Lamp: Fishing Hamlet","Lamp: Fishing Hamlet Shore"]},
+{n:"The Hunter's Dream",t:"m",b:["Gehrman, the First Hunter","Moon Presence"],i:["Collect all 3 Great One umbilical cords for the true ending"]}
+];
+
+const KEY="bb-ledger-v1";
+let st={},flt={main:true,opt:true,dlc:true};
+try{st=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){st={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+const cls={m:"main",o:"opt",d:"dlc"},lab={m:"Main path",o:"Optional",d:"DLC"};
+let bossNo=0;
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/'/g,"&#39;");
+
+// flatten: collect leaf keys
+function keys(a,p){let r=[];a.b.forEach((_,j)=>r.push(p+"b"+j));a.i.forEach((_,j)=>r.push(p+"i"+j));
+  (a.k||[]).forEach((c,j)=>{r=r.concat(keys(c,p+"k"+j+"/"))});return r}
+function bossKeys(a,p){let r=a.b.map((_,j)=>p+"b"+j);(a.k||[]).forEach((c,j)=>{r=r.concat(bossKeys(c,p+"k"+j+"/"))});return r}
+
+function build(a,p,top,idx){
+  const k=cls[a.t];
+  let h=`<details class="area ${k}" data-t="${k}" ${top?"":"open"} data-p="${p}"><summary>
+  <input type="checkbox" class="ag" data-p="${p}" aria-label="Tick all in ${esc(a.n)}">
+  <span class="aname">${esc(a.n)}</span><span class="tag">${lab[a.t]}</span><span class="cnt" data-c="${p}"></span></summary><div class="body">`;
+  a.b.forEach((b,j)=>{bossNo++;h+=`<label class="row boss"><span class="n">${a.t==="o"?"·":bossNo}</span><input type="checkbox" data-k="${p}b${j}"><span class="t">${esc(b)}</span></label>`;});
+  a.i.forEach((it,j)=>{h+=`<label class="row item"><input type="checkbox" data-k="${p}i${j}"><span class="t">${esc(it)}</span></label>`;});
+  (a.k||[]).forEach((c,j)=>{h+=build(c,p+"k"+j+"/",false)});
+  return h+`</div></details>`;
+}
+const tree=document.getElementById("tree");
+function render(){
+  bossNo=0;
+  tree.innerHTML=ROUTE.map((a,i)=>build(a,"a"+i+"/",true)).join("");
+  refresh();
+}
+function find(p){ // path like a3/k0/ -> node
+  const parts=p.split("/").filter(Boolean);let n=ROUTE[+parts[0].slice(1)];
+  for(let i=1;i<parts.length;i++)n=n.k[+parts[i].slice(1)];return n}
+function refresh(){
+  let tot=0,done=0;
+  document.querySelectorAll("input[data-k]").forEach(c=>{c.checked=!!st[c.dataset.k]});
+  document.querySelectorAll(".ag").forEach(c=>{
+    const ks=keys(find(c.dataset.p),c.dataset.p),d=ks.filter(x=>st[x]).length;
+    c.checked=d===ks.length&&ks.length>0;c.indeterminate=d>0&&d<ks.length;
+    document.querySelector(`[data-c="${c.dataset.p}"]`).textContent=d+"/"+ks.length;
+  });
+  ROUTE.forEach((a,i)=>{const ks=keys(a,"a"+i+"/");const vis=flt[cls[a.t]];if(vis){tot+=ks.length;done+=ks.filter(x=>st[x]).length}});
+  document.getElementById("tb").style.width=(tot?done/tot*100:0)+"%";
+  document.getElementById("tc").textContent=done+"/"+tot;
+  document.querySelectorAll("details.area").forEach(d=>{
+    d.hidden=!flt[d.dataset.t];
+  });
+}
+tree.addEventListener("change",e=>{
+  const c=e.target;
+  if(c.dataset.k){st[c.dataset.k]=c.checked?1:0}
+  else if(c.classList.contains("ag")){
+    keys(find(c.dataset.p),c.dataset.p).forEach(k=>{st[k]=c.checked?1:0});
+  }
+  save();refresh();
+});
+tree.addEventListener("click",e=>{if(e.target.classList.contains("ag"))e.stopPropagation()});
+document.querySelectorAll("[data-f]").forEach(b=>b.addEventListener("click",()=>{
+  const f=b.dataset.f;flt[f]=!flt[f];b.setAttribute("aria-pressed",flt[f]);refresh();}));
+document.getElementById("reset").addEventListener("click",()=>{
+  if(confirm("Clear all progress?")){st={};save();refresh();}});
+render();
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+</script>
+</body>
+</html>
