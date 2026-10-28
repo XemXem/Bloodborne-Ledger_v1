@@ -68,6 +68,13 @@ dialog#map::backdrop{background:rgba(0,0,0,.75)}
 #mimg{display:block;width:100%;height:auto;cursor:zoom-in}
 #mimg.zoom{width:250%;max-width:none;cursor:zoom-out}
 #mmsg{padding:24px;text-align:center;color:var(--mute)}
+footer{margin-top:32px;padding-top:14px;border-top:1px solid var(--line);text-align:center;color:var(--mute);font-size:.9rem}
+footer p{margin:4px 0}
+footer .chip{--c:var(--mute);font-size:.85rem;padding:2px 10px;margin-left:6px}
+dialog#credits{width:min(92vw,460px);padding:0;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+dialog#credits::backdrop{background:rgba(0,0,0,.75)}
+#clist{margin:0;padding:14px 18px 18px 36px}
+#clist li{padding:3px 0}
 </style>
 </head>
 <body>
@@ -82,10 +89,18 @@ dialog#map::backdrop{background:rgba(0,0,0,.75)}
     <button class="chip plain" id="reset" aria-pressed="false">Reset</button>
   </div>
   <div id="tree"></div>
+  <footer>
+    <p>Made by XemXem, with the help of AI (Claude by Anthropic). <button class="chip" id="cbtn">Credits</button></p>
+    <p>Unofficial fan project. Bloodborne belongs to FromSoftware and Sony.</p>
+  </footer>
 </div>
 <dialog id="map" aria-label="Map">
   <div class="mhead"><span>Tap the map to zoom in or out</span><button class="chip plain" id="mclose" style="margin:0">Close</button></div>
   <div id="mwrap"><img id="mimg" alt="Bloodborne map" hidden><p id="mmsg" hidden>No map found yet. Add an image named <b>map.png</b> (or map.jpg / map.webp) to the same folder as index.html in your GitHub repo.</p></div>
+</dialog>
+<dialog id="credits" aria-label="Credits">
+  <div class="mhead"><span>Credits</span><button class="chip plain" id="cclose" style="margin:0">Close</button></div>
+  <ul id="clist"></ul>
 </dialog>
 <script>
 // t: m=main, o=optional, d=DLC. b=bosses (in order), i=notable items/lamps, k=sub-areas
@@ -182,6 +197,18 @@ mi.addEventListener("click",()=>mi.classList.toggle("zoom"));
 document.getElementById("mapbtn").addEventListener("click",()=>{mi.classList.remove("zoom");if(mi.hidden&&mm.hidden)loadMap();mapD.showModal()});
 document.getElementById("mclose").addEventListener("click",()=>mapD.close());
 mapD.addEventListener("click",e=>{if(e.target===mapD)mapD.close()});
+const cD=document.getElementById("credits"),cL=document.getElementById("clist");
+const CREDITS_FALLBACK=["Map artwork - (add the artist's name in credits.txt)"];
+function showCredits(lines){cL.innerHTML="";lines.forEach(t=>{const li=document.createElement("li");li.textContent=t;cL.appendChild(li)})}
+async function loadCredits(){
+  let lines=CREDITS_FALLBACK;
+  try{const r=await fetch("credits.txt",{cache:"no-store"});if(r.ok){
+    const l=(await r.text()).split(/\r?\n/).map(x=>x.trim()).filter(x=>x&&!x.startsWith("#"));if(l.length)lines=l}}catch(e){}
+  showCredits(lines);
+}
+document.getElementById("cbtn").addEventListener("click",()=>{loadCredits();cD.showModal()});
+document.getElementById("cclose").addEventListener("click",()=>cD.close());
+cD.addEventListener("click",e=>{if(e.target===cD)cD.close()});
 render();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
 </script>
