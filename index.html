@@ -54,11 +54,25 @@ input[type=checkbox]{accent-color:var(--c,var(--main));width:17px;height:17px;fl
 .item{color:var(--mute);font-size:.95rem;padding-left:2.2em}
 input:checked+.t{text-decoration:line-through;opacity:.55}
 .empty{color:var(--mute);text-align:center;padding:20px}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.head .chip{--c:var(--ink);white-space:nowrap}
+.area.done{background:#cfe5cc}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .area.done{background:#1f3a26}}
+:root[data-theme="dark"] .area.done{background:#1f3a26}
+.area.done .item,.area.done .cnt{color:var(--ink)}
+dialog#map{width:min(96vw,1100px);max-height:92vh;padding:0;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+dialog#map::backdrop{background:rgba(0,0,0,.75)}
+.mhead{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line)}
+.mhead span{font-style:italic;color:var(--mute);font-size:.9rem}
+#mwrap{overflow:auto;max-height:calc(92vh - 52px);-webkit-overflow-scrolling:touch}
+#mimg{display:block;width:100%;height:auto;cursor:zoom-in}
+#mimg.zoom{width:250%;max-width:none;cursor:zoom-out}
+#mmsg{padding:24px;text-align:center;color:var(--mute)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Hunt Ledger</h1>
+  <div class="head"><h1>Hunt Ledger</h1><button class="chip" id="mapbtn">🗺 Map</button></div>
   <p class="sub">A Bloodborne progress route. Tick an area to tick everything in it.</p>
   <div class="total"><div class="bar"><i id="tb"></i></div><span id="tc" class="cnt"></span></div>
   <div class="tools" id="tools">
@@ -69,6 +83,10 @@ input:checked+.t{text-decoration:line-through;opacity:.55}
   </div>
   <div id="tree"></div>
 </div>
+<dialog id="map" aria-label="Map">
+  <div class="mhead"><span>Tap the map to zoom in or out</span><button class="chip plain" id="mclose" style="margin:0">Close</button></div>
+  <div id="mwrap"><img id="mimg" alt="Bloodborne map" hidden><p id="mmsg" hidden>No map found yet. Add an image named <b>map.png</b> (or map.jpg / map.webp) to the same folder as index.html in your GitHub repo.</p></div>
+</dialog>
 <script>
 // t: m=main, o=optional, d=DLC. b=bosses (in order), i=notable items/lamps, k=sub-areas
 const ROUTE=[
@@ -132,7 +150,7 @@ function refresh(){
   document.querySelectorAll("input[data-k]").forEach(c=>{c.checked=!!st[c.dataset.k]});
   document.querySelectorAll(".ag").forEach(c=>{
     const ks=keys(find(c.dataset.p),c.dataset.p),d=ks.filter(x=>st[x]).length;
-    c.checked=d===ks.length&&ks.length>0;c.indeterminate=d>0&&d<ks.length;
+    c.checked=d===ks.length&&ks.length>0;c.closest("details").classList.toggle("done",c.checked);c.indeterminate=d>0&&d<ks.length;
     document.querySelector(`[data-c="${c.dataset.p}"]`).textContent=d+"/"+ks.length;
   });
   ROUTE.forEach((a,i)=>{const ks=keys(a,"a"+i+"/");const vis=flt[cls[a.t]];if(vis){tot+=ks.length;done+=ks.filter(x=>st[x]).length}});
@@ -155,6 +173,15 @@ document.querySelectorAll("[data-f]").forEach(b=>b.addEventListener("click",()=>
   const f=b.dataset.f;flt[f]=!flt[f];b.setAttribute("aria-pressed",flt[f]);refresh();}));
 document.getElementById("reset").addEventListener("click",()=>{
   if(confirm("Clear all progress?")){st={};save();refresh();}});
+const mapD=document.getElementById("map"),mi=document.getElementById("mimg"),mm=document.getElementById("mmsg");
+let mapTry=["map.png","map.jpg","map.jpeg","map.webp"],mapIdx=0;
+function loadMap(){mi.hidden=true;mm.hidden=true;mapIdx=0;mi.src=mapTry[0]}
+mi.onload=()=>{mi.hidden=false;mm.hidden=true};
+mi.onerror=()=>{mapIdx++;if(mapIdx<mapTry.length)mi.src=mapTry[mapIdx];else{mi.hidden=true;mm.hidden=false}};
+mi.addEventListener("click",()=>mi.classList.toggle("zoom"));
+document.getElementById("mapbtn").addEventListener("click",()=>{mi.classList.remove("zoom");if(mi.hidden&&mm.hidden)loadMap();mapD.showModal()});
+document.getElementById("mclose").addEventListener("click",()=>mapD.close());
+mapD.addEventListener("click",e=>{if(e.target===mapD)mapD.close()});
 render();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
 </script>
