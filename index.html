@@ -92,6 +92,7 @@ dialog#credits::backdrop{background:rgba(0,0,0,.75)}
   <footer>
     <p>Made by XemXem, with the help of AI (Claude by Anthropic). <button class="chip" id="cbtn">Credits</button></p>
     <p>Unofficial fan project. Bloodborne belongs to FromSoftware and Sony.</p>
+    <p>this is still being worked on and things changed due to AI not knowing where things are supposed to be haha.</p>
   </footer>
 </div>
 <dialog id="map" aria-label="Map">
@@ -105,18 +106,18 @@ dialog#credits::backdrop{background:rgba(0,0,0,.75)}
 <script>
 // t: m=main, o=optional, d=DLC. b=bosses (in order), i=notable items/lamps, k=sub-areas
 const ROUTE=[
-{n:"Central Yharnam",t:"m",b:["Cleric Beast","Father Gascoigne"],i:["Lamp: Hunter's Dream unlocked","Lamp: Central Yharnam","Lamp: Tomb of Oedon","Weapon upgrades from the Workshop"],k:[
-  {n:"Hemwick Charnel Lane",t:"o",b:["Witch of Hemwick"],i:["Lamp: Hemwick Charnel Lane","Lamp: Grand Cathedral"]}]},
-{n:"Old Yharnam",t:"m",b:["Blood-Starved Beast"],i:["Lamp: Old Yharnam","Lamp: Tomb of Oedon (Old Yharnam side)"]},
-{n:"Cathedral Ward",t:"m",b:["Vicar Amelia"],i:["Lamp: Cathedral Ward","Lamp: Grand Cathedral"],k:[
-  {n:"Yahar'gul, Unseen Village",t:"o",b:["Darkbeast Paarl","The One Reborn"],i:["Lamp: Yahar'gul Chapel","Lamp: Outside Yahar'gul"]},
-  {n:"Altar of Despair",t:"o",b:["Martyr Logarius"],i:["Lamp: Altar of Despair"]}]},
+{n:"Central Yharnam",t:"m",b:["Cleric Beast","Father Gascoigne"],i:["Hunter's Dream unlocked","Lamp: Central Yharnam","Lamp: Tomb of Oedon","Lamp: Grand Cathedral"],k:[
+  {n:"Hemwick Charnel Lane",t:"o",b:["Witch of Hemwick"],i:["Lamp: Hemwick Charnel Lane"]}]},
+{n:"Old Yharnam",t:"m",b:["Blood-Starved Beast"],i:["Lamp: Old Yharnam"]},
+{n:"Cathedral Ward",t:"m",b:["Vicar Amelia"],i:["Lamp: Cathedral Ward","Lamp: Grand Cathedral","Lamp: Old Abandoned Workshop"],k:[
+  {n:"Yahar'gul, Unseen Village",t:"o",b:["Lamp: Yahar'gul, Unseen Village","Darkbeast Paarl","The One Reborn"],i:["Lamp: Yahar'gul Chapel"]},
+  {n:"Altar of Despair",t:"o",b:["Ebrietas, Daughter of the Cosmos"],i:["Lamp: Altar of Despair"]}]},
 {n:"Forbidden Woods",t:"m",b:["Shadows of Yharnam"],i:["Lamp: Forbidden Woods","Lamp: Iosefka's Clinic"]},
-{n:"Byrgenwerth",t:"m",b:["Rom, the Vacuous Spider"],i:["Lamp: Byrgenwerth","Lamp: Lecture Building"],k:[
-  {n:"Lecture Building (Nightmare)",t:"o",b:[],i:["Lamp: Lecture Building"]}]},
-{n:"Upper Cathedral Ward",t:"m",b:["Ebrietas, Daughter of the Cosmos"],i:["Lamp: Upper Cathedral Ward","Lamp: Grand Cathedral"],k:[
-  {n:"Cainhurst Castle",t:"o",b:["Queen Annalise"],i:["Cainhurst Invitation Letter","Lamp: Cainhurst Castle"]}]},
-{n:"Nightmare Frontier",t:"m",b:["Amygdala","Micolash, Host of the Nightmare"],i:["Lamp: Nightmare Frontier","Lamp: Lecture Building"],k:[
+{n:"Byrgenwerth",t:"m",b:["Rom, the Vacuous Spider"],i:["Lamp: Byrgenwerth","Lamp: Lecture Building","Lamp: Lecture Building 2nd Floor"],k:[
+  {n:"Lecture Building (Nightmare)",t:"o",b:[],i:["Micolash, Host of the Nightmare"]}]},
+{n:"Upper Cathedral Ward",t:"m",b:["Celestial Emissary"],i:["Lamp: Upper Cathedral Ward","Lamp: Grand Cathedral"],k:[
+  {n:"Cainhurst Castle",t:"o",b:["Martyr Logarius"],i:["Cainhurst Invitation Letter","Lamp: Cainhurst Castle"]}]},
+{n:"Nightmare Frontier",t:"m",b:["Amygdala"],i:["Lamp: Nightmare Frontier"],k:[
   {n:"Hypogean Gaol",t:"o",b:["Gargoyles"],i:["Lamp: Hypogean Gaol"]}]},
 {n:"Nightmare of Mensis",t:"m",b:["Mergo's Wet Nurse"],i:["Lamp: Mensis Nightmare","Lamp: Great Cathedral"],k:[
   {n:"Mensis Nightmare (Brain)",t:"o",b:["Brain of Mensis"],i:["Lamp: Mensis Nightmare"]}]},
