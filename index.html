@@ -106,20 +106,20 @@ dialog#credits::backdrop{background:rgba(0,0,0,.75)}
 <script>
 // t: m=main, o=optional, d=DLC. b=bosses (in order), i=notable items/lamps, k=sub-areas
 const ROUTE=[
-{n:"Central Yharnam",t:"m",b:["Cleric Beast","Father Gascoigne"],i:["Hunter's Dream unlocked","Lamp: Central Yharnam","Lamp: Tomb of Oedon","Lamp: Grand Cathedral"],k:[
+{n:"Central Yharnam",t:"m",b:["Cleric Beast","Father Gascoigne"],i:["Hunter's Dream unlocked","Lamp: Central Yharnam","Lamp: Tomb of Oedon","Lamp: Grand Cathedral","Iosefka's Clinic: Umbilical Cord (after Rom)"],k:[
   {n:"Hemwick Charnel Lane",t:"o",b:["Witch of Hemwick"],i:["Lamp: Hemwick Charnel Lane"]}]},
-{n:"Old Yharnam",t:"m",b:["Blood-Starved Beast"],i:["Lamp: Old Yharnam"]},
-{n:"Cathedral Ward",t:"m",b:["Vicar Amelia"],i:["Lamp: Cathedral Ward","Lamp: Grand Cathedral","Lamp: Old Abandoned Workshop"],k:[
-  {n:"Yahar'gul, Unseen Village",t:"o",b:["Lamp: Yahar'gul, Unseen Village","Darkbeast Paarl","The One Reborn"],i:["Lamp: Yahar'gul Chapel"]}]},
+{n:"Old Yharnam",t:"o",b:["Blood-Starved Beast"],i:["Lamp: Old Yharnam"]},
+{n:"Cathedral Ward",t:"m",b:["Vicar Amelia"],i:["Lamp: Cathedral Ward","Lamp: Grand Cathedral","Lamp: Old Abandoned Workshop","Umbilical Cord (Old Abandoned Workshop)","Arianna's quest: Umbilical Cord"],k:[
+  {n:"Yahar'gul, Unseen Village",t:"m",b:["Lamp: Yahar'gul, Unseen Village","The One Reborn","Darkbeast Paarl(optional)"],i:["Lamp: Yahar'gul Chapel"]}]},
 {n:"Forbidden Woods",t:"m",b:["Shadows of Yharnam"],i:["Lamp: Forbidden Woods","Lamp: Iosefka's Clinic"]},
 {n:"Byrgenwerth",t:"m",b:["Rom, the Vacuous Spider"],i:["Lamp: Byrgenwerth","Lamp: Lecture Building","Lamp: Lecture Building 2nd Floor"],k:[
   {n:"Lecture Building (Nightmare)",t:"m",b:["Micolash, Host of the Nightmare"],i:[]}]},
-{n:"Upper Cathedral Ward",t:"m",b:[],i:["Lamp: Upper Cathedral Ward","Lamp: Grand Cathedral"],k:[
+{n:"Upper Cathedral Ward",t:"o",b:[],i:["Lamp: Upper Cathedral Ward","Lamp: Grand Cathedral"],k:[
   {n:"Orphanage",t:"o",b:["Celestial Emmisary","Ebrietas, Daughter of the Cosmos"],i:[]},
   {n:"Cainhurst Castle",t:"o",b:["Martyr Logarius"],i:["Cainhurst Invitation Letter","Lamp: Cainhurst Castle"]}]},
-{n:"Nightmare Frontier",t:"m",b:["Amygdala"],i:["Lamp: Nightmare Frontier"],k:[
+{n:"Nightmare Frontier",t:"o",b:["Amygdala"],i:["Lamp: Nightmare Frontier"],k:[
   {n:"Hypogean Gaol",t:"o",b:["Gargoyles"],i:["Lamp: Hypogean Gaol"]}]},
-{n:"Nightmare of Mensis",t:"m",b:["Mergo's Wet Nurse"],i:["Lamp: Mensis Nightmare","Lamp: Great Cathedral"],k:[
+{n:"Nightmare of Mensis",t:"m",b:["Mergo's Wet Nurse"],i:["Umbilical Cord"],["Lamp: Mensis Nightmare","Lamp: Great Cathedral"],k:[
   {n:"Mensis Nightmare (Brain)",t:"o",b:["Brain of Mensis"],i:["Lamp: Mensis Nightmare"]}]},
 {n:"Chalice Dungeons",t:"o",b:["Watchdog of the Old Lords","Keeper of the Old Lords","Pthumerian Queen Yharnam"],i:["Root Chalice","Defiled Chalice"]},
 {n:"Hunter's Nightmare",t:"d",b:["Ludwig the Accursed / Holy Blade"],i:["Lamp: Hunter's Nightmare","Lamp: Nightmare's Edge"]},
